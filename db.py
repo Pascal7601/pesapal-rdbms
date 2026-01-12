@@ -20,7 +20,12 @@ class DB:
                 "rows": []
             }
             """
+            if not len(parts) >= 4:
+                return "Error: invalid command"
             table_name = parts[2]
+            if table_name in self.tables:
+                return "Error: table already exists"
+            
             columns = statement.split('(')[1].strip(')')
             col_list = columns.split(',')
             
@@ -35,7 +40,7 @@ class DB:
 
                 schema[col_name] = col_type
                 constraints = [t.upper() for t in tokens[2:]]
-                print("constrinats", constraints)
+                
                 if "PRIMARY_KEY" in constraints:
                     if primary_key:
                         raise IndexError("Error: Multiple primary keys defined")
@@ -49,20 +54,79 @@ class DB:
                     "unique_keys": unique_keys,
                     "rows": []
                 }
+            print(self.tables)
             return f"Table {table_name} created"
         
-        # elif verb == "INSERT":
-        #     table_name = parts[2]
-        #     if table_name not in self.tables:
-        #         return "Error: Table not found"
-        #     table_structure = self.tables[table_name]
+        elif verb == "INSERT":
+            if not len(parts) > 4:
+                return "Error: invalid command"
+            if parts[3].upper() != "VALUES":
+                return "Error: Invalid command"
             
-        #     raw_values = statement.split('VALUES')[1].strip().strip('()')
-        #     values = [v.strip() for v in raw_values.split(',')]
-        #     print(values)
+            table_name = parts[2]
+            if table_name not in self.tables:
+                return "Error: Table not found"
+            table_structure = self.tables[table_name]
+            
+            raw_values = statement.split('VALUES')[1].strip().strip('()')
+            values = [v.strip() for v in raw_values.split(',')]
+            
+            # construct the new row
+            new_row = {}
+            col_names = list(table_structure['schema'].keys())
+            for i, col in enumerate(col_names):
+                new_row[col] = values[i]
+            
+            # check for constraints
+            error = self._check_constraints(table_structure, new_row)
+            if error:
+                return error
 
-        #     new_row = []
+            # commit
+            table_structure['rows'].append(new_row)
+            print(self.tables)
+            return "Succes: data inserted in row"
+        
+        elif verb == "DELETE":
+            if not len(parts) > 4:
+                return "Error: invalid command"
+            table_name = parts[2]
+            if table_name not in self.tables:
+                return "Error: table not found"
+            
+            try:
+                where_part = statement.split('WHERE')[1].strip()
+                target_col, target_val = where_part.split('=')
+                target_col = target_col.strip()
+                target_val = target_val.strip()
+            except IndexError:
+                return "Error: WHERE clause missing"
+            
+            rows = self.tables[table_name]['rows']
+            initial_count = len(rows)
+            
+            # keep the rows that do not match the value
+            self.tables[table_name]['rows'] = [
+                row for row in rows
+                if str(row.get(target_col)) != str(target_val)
+            ]
+            print(self.tables)
+            deleted_count = initial_count - len(self.tables[table_name]['rows'])
+            return f"Deleted {deleted_count} rows"
+    
+    def _check_constraints(self, table_structure, new_row):
+        """
+        Scans existing rows to ensure PK and Unique constraints are met.
+        Returns None if safe, or an error string if violated.
+        """
+        pk_col = table_structure['primary_key']
+        unique_cols = table_structure['unique_keys']
+        existing_rows = table_structure['rows']
 
-db = DB()
-print(db.execute("CREATE TABLE users (id INT PRIMARY_KEY, name VARCHAR)"))
-print(db.execute("INSERT INTO users VALUES (1, Pascal)"))
+        # check against every existing row
+        for row in existing_rows:
+            # check for primary key
+            if pk_col and str(row[pk_col]) == str(new_row[pk_col]):
+                return f"Error: Duplicate primary key {new_row['pk_col']}"
+
+        return None
