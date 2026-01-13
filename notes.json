@@ -1,0 +1,12 @@
+{
+    "notes": {
+        "schema": {
+            "id": "INT",
+            "title": "TEXT",
+            "content": "TEXT"
+        },
+        "primary_key": "id",
+        "unique_keys": [],
+        "rows": []
+    }
+}

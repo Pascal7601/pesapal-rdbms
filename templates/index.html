@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notepad</title>
+    <style>
+        body { font-family: sans-serif; max-width: 800px; margin: 2rem auto; padding: 0 1rem; }
+        .note { border: 1px solid #ccc; padding: 1rem; margin-bottom: 1rem; border-radius: 4px; }
+        .note-header { display: flex; justify-content: space-between; align-items: center; }
+        form { display: inline; }
+        input, textarea { width: 100%; margin-bottom: 0.5rem; padding: 0.5rem; }
+        button { cursor: pointer; padding: 0.5rem 1rem; }
+        .delete-btn { background: #ff4444; color: white; border: none; }
+    </style>
+</head>
+<body>
+    <h1>📝 Notepad</h1>
+
+    <div style="background: #f4f4f4; padding: 1rem; border-radius: 8px;">
+        <h3>Add New Note</h3>
+        <form action="/add" method="POST">
+            <input type="text" name="title" placeholder="Title" required>
+            <textarea name="content" placeholder="Content" required></textarea>
+            <button type="submit">Save Note</button>
+        </form>
+    </div>
+
+    <hr>
+
+    <h3>Your Notes</h3>
+    {% for note in notes %}
+        <div class="note">
+            <div class="note-header">
+                <h2>#{{ note.id }}: {{ note.title }}</h2>
+                
+                <form action="/delete/{{ note.id }}" method="POST">
+                    <button type="submit" class="delete-btn">Delete</button>
+                </form>
+            </div>
+            
+            <p>{{ note.content }}</p>
+
+            <details>
+                <summary>Edit Content</summary>
+                <form action="/update/{{ note.id }}" method="POST" style="margin-top: 10px; display: block;">
+                    <input type="text" name="content" value="{{ note.content }}">
+                    <button type="submit">Update</button>
+                </form>
+            </details>
+        </div>
+    {% else %}
+        <p>No notes found. Create one above!</p>
+    {% endfor %}
+</body>
+</html>
