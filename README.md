@@ -4,6 +4,16 @@ A lightweight, file-based Relational Database Management System (RDBMS) implemen
 
 This project was built to satisfy the Pesapal Engineering Challenge. It demonstrates the implementation of a core database engine with support for schemas, typing, constraints, and joins, decoupled from its interfaces (REPL and Web).
 
+## 📸 Screenshots
+
+### The Notepad Web App
+*A simple frontend built with Flask to demonstrate CRUD operations.*
+![Notepad Web Interface](screenshots/frontend.png)
+
+### The REPL (Admin Interface)
+*Direct database management via the command line.*
+![REPL Interface](screenshots/repl.png)
+
 ## 🏗 Architecture
 
 The system follows a modular architecture separating the **Storage Engine** from the **User Interface**.

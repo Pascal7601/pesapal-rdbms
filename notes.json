@@ -7,6 +7,26 @@
         },
         "primary_key": "id",
         "unique_keys": [],
-        "rows": []
+        "rows": [
+            {
+                "id": "1",
+                "title": "movies",
+                "content": "GOT"
+            }
+        ]
+    },
+    "users": {
+        "schema": {
+            "id": "INT",
+            "name": "VARCHAR"
+        },
+        "primary_key": "id",
+        "unique_keys": [],
+        "rows": [
+            {
+                "id": "1",
+                "name": "Pascal"
+            }
+        ]
     }
 }

@@ -58,7 +58,7 @@ class DB:
                     "rows": []
                 }
             self.save()
-            print(self.tables)
+            # print(self.tables)
             return f"Table {table_name} created"
         
         elif verb == "INSERT":
@@ -88,7 +88,7 @@ class DB:
 
             # commit
             table_structure['rows'].append(new_row)
-            print(self.tables)
+            # print(self.tables)
             self.save()
             return "Succes: data inserted in row"
         
@@ -116,7 +116,7 @@ class DB:
                 row for row in rows
                 if str(row.get(target_col)) != str(target_val)
             ]
-            print(self.tables)
+            # print(self.tables)
             deleted_count = initial_count - len(self.tables[table_name]['rows'])
             self.save()
             return f"Deleted {deleted_count} rows"
@@ -155,7 +155,7 @@ class DB:
 
                     row[set_col] = set_val
                     updated_count += 1
-            print(self.tables)
+            # print(self.tables)
             self.save()
             return f"Updated {updated_count} rows"
         
